@@ -1,0 +1,141 @@
+sudo apt-get install  git -y && mkdir temp && cd temp && sudo git clone https://github.com/nrdroque/wardrive && history -c
+
+#### Diferencial de linhas em ficheiros####
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+# Verifica se foram passados dois argumentos (os ficheiros a comparar)
+if (@ARGV != 2) {
+    die "Uso: $0 ficheiro1 ficheiro2\n";
+}
+
+my ($file1, $file2) = @ARGV;
+
+# Abre os ficheiros para leitura
+open(my $fh1, '<', $file1) or die "Não foi possível abrir o ficheiro '$file1': $!\n";
+open(my $fh2, '<', $file2) or die "Não foi possível abrir o ficheiro '$file2': $!\n";
+
+# Lê os ficheiros linha por linha
+my @lines1 = <$fh1>;
+my @lines2 = <$fh2>;
+
+# Fecha os ficheiros
+close($fh1);
+close($fh2);
+
+# Obtém o número máximo de linhas para garantir que todas as linhas são comparadas
+my $max_lines = @lines1 > @lines2 ? @lines1 : @lines2;
+
+# Compara linha por linha e identifica as diferenças
+for (my $i = 0; $i < $max_lines; $i++) {
+    my $line1 = $lines1[$i] // ''; # Se não houver linha, usa string vazia
+    my $line2 = $lines2[$i] // ''; # Se não houver linha, usa string vazia
+
+    # Verifica se as linhas são diferentes
+    if ($line1 ne $line2) {
+        print "Linha ", $i + 1, ":\n";
+        print "Ficheiro 1: ", $line1;
+        print "Ficheiro 2: ", $line2;
+        print "\n";
+    }
+}
+#####################criaçao de users com base num ficheiro de text###############################################333
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+# Verifica se foi passado um argumento (o ficheiro com a lista de utilizadores)
+if (@ARGV != 1) {
+    die "Uso: $0 ficheiro_utilizadores\n";
+}
+
+my $file = $ARGV[0];
+
+# Abre o ficheiro para leitura
+open(my $fh, '<', $file) or die "Não foi possível abrir o ficheiro '$file': $!\n";
+
+# Lê cada linha do ficheiro
+while (my $line = <$fh>) {
+    chomp($line);
+    # Divide a linha nos campos esperados
+    my ($username, $home_dir, $password, $shell) = split /#/, $line;
+
+    # Cria o utilizador com o comando useradd
+    my $cmd = "sudo useradd -m -d $home_dir -s $shell $username";
+    system($cmd) == 0 or warn "Falha ao adicionar utilizador $username: $!\n";
+
+    # Define a senha do utilizador
+    $cmd = "echo $username:$password | sudo chpasswd";
+    system($cmd) == 0 or warn "Falha ao definir a senha para $username: $!\n";
+}
+
+# Fecha o ficheiro
+close($fh);
+###exemplo estrutura do ficehiro a ler###
+## - teste1#/home/pl1#12345678#/bin/sh
+## - teste2#/home/pl2#12345678#/bin/bash
+
+#################################
+
+###########contagem de ficheiros###########3
+#!/usr/bin/perl
+use strict;
+use warnings;
+use File::Find;
+use File::Basename;
+
+# Verifica se foi passado ao menos um argumento
+if (@ARGV < 1) {
+    die "Uso: $0 <caminho_para_diretoria> [<caminho_para_ficheiro_de_saida>]\n";
+}
+
+my $directory = $ARGV[0];
+my $output_file = $ARGV[1];
+
+# Verifica se a diretoria existe
+unless (-d $directory) {
+    die "Erro: A diretoria '$directory' não existe.\n";
+}
+
+# Declaração de um hash para armazenar a contagem de tipos de ficheiros
+my %file_types;
+
+print "[INFO] Getting list of files starting from '$directory'...\n";
+
+# Sub-rotina para processar cada ficheiro encontrado
+sub process_file {
+    if (-f $_) {
+        # Obtém o tipo de ficheiro usando o comando `file`
+        my $file_info = `file -b --mime-type $_`;
+        chomp($file_info);
+        $file_types{$file_info}++;
+    }
+}
+
+print "[INFO] Processing files...\n";
+
+# Usa o módulo File::Find para percorrer a diretoria e subdiretorias
+find(\&process_file, $directory);
+
+# Contagem total de tipos encontrados
+my $total_types = keys %file_types;
+print "[INFO] Total types found: $total_types\n";
+
+# Função para imprimir ou salvar a contagem de ficheiros por tipo
+sub output_results {
+    my $out_fh = shift;
+    foreach my $type (sort keys %file_types) {
+        print $out_fh "$type:$file_types{$type}\n";
+    }
+}
+
+# Verifica se foi passado um ficheiro de saída
+if ($output_file) {
+    open(my $fh, '>', $output_file) or die "Não foi possível abrir o ficheiro '$output_file': $!\n";
+    output_results($fh);
+    close($fh);
+    print "[INFO] Resultados salvos em '$output_file'.\n";
+} else {
+    output_results(*STDOUT);
+}
