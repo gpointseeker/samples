@@ -1,4 +1,3 @@
-sudo apt-get install  git -y && mkdir temp && cd temp && sudo git clone https://github.com/nrdroque/wardrive && history -c
 
 #### Diferencial de linhas em ficheiros####
 #!/usr/bin/perl
