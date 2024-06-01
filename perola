@@ -134,6 +134,27 @@ if ($output_file) {
     open(my $fh, '>', $output_file) or die "Não foi possível abrir o ficheiro '$output_file': $!\n";
     output_results($fh);
     close($fh);
+
+
+#### ficheior para ps e permissoes e portas ###
+#!/usr/bin/perl
+use strict;
+use warnings;
+use POSIX qw(strftime);
+
+# 1. Data atual no formato DD/MMM/YYYY hh:mm:ss
+my $date = strftime "%d/%b/%Y %H:%M:%S", localtime;
+print "Data atual: $date\n";
+
+# 2. Listagem detalhada dos ficheiros com permissões de SUID para root
+print "Ficheiros com SUID para root:\n";
+my @suid_files = `find / -perm -4000 -user root -exec ls -l {} + 2>/dev/null`;
+print @suid_files;
+
+# 3. Listagem ordenada dos portos TCP correspondentes a ligações estabelecidas
+print "Portos TCP com ligações estabelecidas:\n";
+my @tcp_ports = `netstat -tlnp | grep ESTABLISHED`;
+print @tcp_ports;
     print "[INFO] Resultados salvos em '$output_file'.\n";
 } else {
     output_results(*STDOUT);
