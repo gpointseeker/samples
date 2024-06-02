@@ -1,0 +1,31 @@
+#!/usr/bin/perl -w 
+use strict;
+use warnings;
+
+#verificar se o argumento t
+if (@ARGV !=1){
+  die ("paramentros invalidos \n");
+}
+#verifica se é ficheiro
+int $fich =$ARGV[0];
+if (! -f $fich)
+{
+ die("p1 não é ficheiro");
+}
+#open ficheiro para leitura || sai com $! erro
+open(FICHIN,"<$fich")|| die("erro na bertura ficheiro : $! \n");
+my @fichin=<FICHIN>;
+chomp(@fichin); #retira o \n da leitura FAZER SEMPRE QUANDO EXISTE IMPUT
+close(FICHIN);
+
+my %palavras;
+foreach my $lin (@fichin){ #Percorre as linhas todas do array#
+  my @lpal = split(/ /,$lin);
+    foreach my $palavra (@lpal){ #percorrer a linha e separaas paralavra
+      $palavras{$pal}++; #se existe chave adiciona 1 ao valor, se nao cria chave
+ 
+  }
+}
+foreach my $i(sort(keys(%palavras))){
+print ("$i ---> $palavras{$i} \n");
+}
