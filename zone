@@ -1,0 +1,39 @@
+$TTL 86400  ; 1 day
+@    IN    SOA   ns1.example.com. admin.example.com. (
+            2024060301 ; Serial (format: YYYYMMDDNN)
+            3600       ; Refresh (1 hour)
+            1800       ; Retry (30 minutes)
+            1209600    ; Expire (2 weeks)
+            86400 )    ; Minimum TTL (1 day)
+
+; Name servers
+     IN    NS    ns1.example.com.
+     IN    NS    ns2.example.com.
+
+; Mail servers
+     IN    MX    10 mail.example.com.
+     IN    MX    20 mail2.example.com.
+
+; A records for name servers
+ns1  IN    A     192.0.2.1
+ns2  IN    A     192.0.2.2
+
+; A records for mail servers
+mail  IN    A    192.0.2.10
+mail2 IN    A    192.0.2.20
+
+; A record for the domain itself
+@     IN    A    192.0.2.3
+
+; CNAME record for www
+www   IN    CNAME  example.com.
+
+; Other common records
+ftp   IN    A     192.0.2.4
+webmail IN  A     192.0.2.5
+
+; TXT record for SPF (Sender Policy Framework)
+@     IN    TXT   "v=spf1 mx -all"
+
+; IPv6 address (AAAA record)
+@     IN    AAAA  2001:db8::1
