@@ -1,0 +1,74 @@
+// named.conf
+// Main configuration file for BIND9
+
+// Global options
+options {
+    directory "/var/named";      // Directory where zone files are stored
+    dump-file "/var/named/data/cache_dump.db"; // Where to dump cache database
+    statistics-file "/var/named/data/named_stats.txt"; // Statistics file
+    memstatistics-file "/var/named/data/named_mem_stats.txt"; // Memory statistics file
+    allow-query { any; };        // Allow queries from any IP address
+    allow-transfer { none; };    // Disable zone transfers by default
+
+    // Forwarders
+    forwarders {
+        8.8.8.8; // Google DNS
+        8.8.4.4; // Google DNS
+    };
+
+    // Enable IPv4 and IPv6
+    listen-on { any; };
+    listen-on-v6 { any; };
+
+    // Enable DNSSEC validation
+    dnssec-validation auto;
+};
+
+// Logging configuration
+logging {
+    channel default_log {
+        file "/var/log/named/named.log" versions 3 size 5m;
+        severity info;
+        print-time yes;
+        print-severity yes;
+        print-category yes;
+    };
+
+    category default {
+        default_log;
+    };
+};
+
+// Root hints
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+// Local zone definitions
+zone "localhost" IN {
+    type master;
+    file "localhost.zone";
+    allow-update { none; };
+};
+
+zone "127.in-addr.arpa" IN {
+    type master;
+    file "named.local";
+    allow-update { none; };
+};
+
+zone "0.in-addr.arpa" IN {
+    type master;
+    file "named.zero";
+    allow-update { none; };
+};
+
+zone "255.in-addr.arpa" IN {
+    type master;
+    file "named.broadcast";
+    allow-update { none; };
+};
+
+// Include the local configuration file
+include "/etc/bind/named.conf.local";
