@@ -57,4 +57,5 @@ sudo nano /etc/logrotate.d/auth
 
 tar -czvf logrotate_config.tar.gz -C ~/ logrotate_config
 
-
+find / -name "myfile.txt" 2> /dev/null
+find 2> /dev/null
